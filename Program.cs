@@ -70,18 +70,26 @@ namespace device_messaging
         public static async void OnTimedEvent(object sender, System.Timers.ElapsedEventArgs e)
         {
 
-            string externalIpString = new WebClient().DownloadString("https://api.ipify.org?format=json").Replace("\\r\\n", "").Replace("\\n", "").Trim();
+            try
+            {
+                string externalIpString = new WebClient().DownloadString("https://api.ipify.org?format=json").Replace("\\r\\n", "").Replace("\\n", "").Trim();
 
-            var result = JsonConvert.DeserializeObject<ipAddress>(externalIpString);
+                var result = JsonConvert.DeserializeObject<ipAddress>(externalIpString);
 
-            var externalIp = IPAddress.Parse(result.ip);
+                var externalIp = IPAddress.Parse(result.ip);
 
-            var messageToSend = "{'IPAddress': '" + externalIp.ToString() + "'}";
+                var messageToSend = "{'IPAddress': '" + externalIp.ToString() + "'}";
 
-            Message message = new Message(Encoding.ASCII.GetBytes(messageToSend));
+                Message message = new Message(Encoding.ASCII.GetBytes(messageToSend));
 
-            Console.WriteLine("Sending Message {0}", messageToSend);
-            await Client.SendEventAsync(message);
+                Console.WriteLine("Sending Message {0}", messageToSend);
+                await Client.SendEventAsync(message);
+            }
+            catch (System.Exception ex)
+            {                
+                Console.WriteLine(ex.ToString());
+            }
+            
 
         }
     }
