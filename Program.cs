@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.Net;
 using System.Timers;
+using Newtonsoft.Json;
 
 namespace device_messaging
 {
@@ -47,8 +48,11 @@ namespace device_messaging
                 Console.WriteLine("Payload:");
                 Console.WriteLine(methodRequest.DataAsJson);
 
-                string externalIpString = new WebClient().DownloadString("http://icanhazip.com").Replace("\\r\\n", "").Replace("\\n", "").Trim();
-                var externalIp = IPAddress.Parse(externalIpString);
+                string externalIpString = new WebClient().DownloadString("https://api.ipify.org?format=json").Replace("\\r\\n", "").Replace("\\n", "").Trim();
+
+                var result = JsonConvert.DeserializeObject<ipAddress>(externalIpString);
+
+                var externalIp = IPAddress.Parse(result.ip);
 
                 var responseMessage = "{\"IPAddress\": \"" + externalIp.ToString() + "\", \"response\": \"OK\"}";
 
@@ -66,8 +70,11 @@ namespace device_messaging
         public static async void OnTimedEvent(object sender, System.Timers.ElapsedEventArgs e)
         {
 
-            string externalIpString = new WebClient().DownloadString("http://icanhazip.com").Replace("\\r\\n", "").Replace("\\n", "").Trim();
-            var externalIp = IPAddress.Parse(externalIpString);
+            string externalIpString = new WebClient().DownloadString("https://api.ipify.org?format=json").Replace("\\r\\n", "").Replace("\\n", "").Trim();
+
+            var result = JsonConvert.DeserializeObject<ipAddress>(externalIpString);
+
+            var externalIp = IPAddress.Parse(result.ip);
 
             var messageToSend = "{'IPAddress': '" + externalIp.ToString() + "'}";
 
@@ -78,4 +85,11 @@ namespace device_messaging
 
         }
     }
+
+    public class ipAddress
+    {
+        public string ip { get; set; }
+    }
+
+
 }
