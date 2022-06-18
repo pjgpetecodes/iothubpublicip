@@ -19,7 +19,7 @@ namespace device_messaging
         {
             Client = DeviceClient.CreateFromConnectionString(args[0].ToString(), Microsoft.Azure.Devices.Client.TransportType.Mqtt);
 
-            aTimer = new System.Timers.Timer(1000);
+            aTimer = new System.Timers.Timer(300000);
             aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
             aTimer.AutoReset = true; //This should be true if you want it actually looping
             aTimer.Enabled = true;
